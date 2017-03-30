@@ -36,6 +36,7 @@ public final class WebServer {
 
         log.debug("Starting ..");
 
+        // Servidor en el puerto PORT
         final ServerSocket serverSocket = new ServerSocket(PORT);
 
         // Ciclo para atender a los clientes
