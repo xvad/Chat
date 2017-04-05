@@ -40,7 +40,7 @@ public class WebServerThreads {
         // Ciclo para atender a los clientes
         while (true) {
 
-            log.debug("Waiting for connection ..");
+            log.debug("Waiting for connection in port {} ..", PORT);
 
             // 1 socket por peticion
             final Socket socket = serverSocket.accept();
