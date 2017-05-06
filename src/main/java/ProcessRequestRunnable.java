@@ -12,9 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +44,7 @@ public class ProcessRequestRunnable implements Runnable {
     private Socket socket;
 
 
+
     /**
      * Constructor
      *
@@ -46,6 +52,7 @@ public class ProcessRequestRunnable implements Runnable {
      */
     public ProcessRequestRunnable(final Socket socket) {
         this.socket = socket;
+
     }
 
 
@@ -57,7 +64,7 @@ public class ProcessRequestRunnable implements Runnable {
      * <p>
      * The general contract of the method <code>run</code> is that it may
      * take any action whatsoever.
-     *
+         *
      * @see Thread#run()
      */
     @Override
@@ -91,6 +98,7 @@ public class ProcessRequestRunnable implements Runnable {
 
     }
 
+
     /**
      * Procesar peticion
      *
@@ -123,6 +131,7 @@ public class ProcessRequestRunnable implements Runnable {
         final String uri = request3[1];
         final String version = request3[2];
 
+
         // Deteccion de version
         if (!StringUtils.equals("HTTP/1.1", version)) {
             log.warn("Wrong version: {}", version);
@@ -147,7 +156,7 @@ public class ProcessRequestRunnable implements Runnable {
      * @param uri
      */
     private static void writeChat(final OutputStream outputStream, final String verbo, final String uri) throws IOException {
-
+        log.debug("URTI FINAAAAL   " + uri);
         if (StringUtils.contains(uri, "chat?msgText=")) {
             final String msg = StringUtils.substringAfter(uri, "chat?msgText=");
             log.debug("Msg to include: {}", msg);
@@ -167,8 +176,18 @@ public class ProcessRequestRunnable implements Runnable {
         // Siempre el mismo comportamiento
         synchronized (chats) {
             for (String line : chats) {
-                sb.append(StringUtils.replace(chatline, "CONTENT", line));
+
+
+                final String lineaVerdadera = URLDecoder.decode(line, Charset.defaultCharset().name());
+                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                Date date = new Date();
+               //InetAddress.getLocalHost().getHostAddress();
+                log.debug(date.toString());
+                String hora = "<font color=\"GRAY\">"+date.toString().split(" ")[3]+"</font>";
+                sb.append(StringUtils.replace(chatline, "CONTENT", hora+" "+lineaVerdadera));
+
                 sb.append("\r\n");
+
             }
         }
 

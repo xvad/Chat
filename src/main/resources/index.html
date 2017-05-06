@@ -5,6 +5,50 @@
     <title>HTML Chat</title>
     <style rel="stylesheet">
 
+        .thumb {
+            height: 200px;
+            border: 1px solid #000;
+            margin: 10px 5px 0 0;
+
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         html, body {
             height: 100%;
             margin: 0;
@@ -131,7 +175,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="modalScript()">
 
 
 <div class="logo"></div>
@@ -139,8 +183,12 @@
 <div id="contents">
     <div id="wrapper">
         <div class="bubble-container">
-            <div class="bubble-container"><span class="bubble"><img class="bubble-avatar" src="" /><div class="bubble-text"><p>Bienvenido al Chat.</p></div><span class="bubble-quote" /></span></div>
+
+                <div class="bubble-container"><span class="bubble"><img class="bubble-avatar" src="https://infosertecblog.files.wordpress.com/2016/08/bot-de-telegram.jpg" alt="imagen no disponible"/><div class="bubble-text"><p>Bienvenido al Chat.</p></div><span class="bubble-quote" /></span></div>
+
+
             <!-- CHAT_CONTENT-->
+
         </div>
     </div>
 </div>
@@ -153,5 +201,123 @@
     </div>
 </center>
 
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content" align="center">
+        <input type="file" id="files" name="files[]" />
+        <br />
+        <output id="list">
+        </output>
+
+        <p>Ingresa nombre de usuario</p> <input type="text" id ="idNick"/>  <button type="button" id="idButtonModal">Ingresar</button>
+
+    </div>
+
+</div>
+
+
 </body>
 </html>
+
+<script>
+    var buttonModal = document.getElementById("idButtonModal");
+    var sourceAvatar = " http://freevector.co/wp-content/uploads/2010/02/68796-chat-avatar.png"
+    document.getElementById('files').addEventListener('change', archivo, false);
+
+    function modalScript() {
+
+        document.getElementById("list").innerHTML = ['<img class="thumb" id="idAvatar" src=" http://freevector.co/wp-content/uploads/2010/02/68796-chat-avatar.png" />'].join('');
+
+        // Get the modal
+        var modal = document.getElementById('myModal');
+
+        var user = getCookie("username");
+        if (user != "") {
+            
+        } else {
+            modal.style.display = "block";
+
+        }
+
+
+
+    }
+    //Funcion para el button del modal
+    buttonModal.onclick = function() {
+
+        var modal = document.getElementById('myModal');
+        //document.getElementById("idAvatarChat").src = sourceAvatar;
+            var user = document.getElementById("idNick").value;
+
+            if (user != "" && user != null) {
+                console.log(sourceAvatar)
+                /*if(!sourceAvatar.includes(".png") || !sourceAvatar.includes(".jpg")){
+                    alert("Debe ingresar una imagen valida")
+                }else{*/
+                    setCookie("username", user, 7);
+                    modal.style.display = "none";
+                //}
+
+            }else{
+                alert("Debe ingresar un usuario")
+            }
+
+
+    }
+
+
+    //Cambiamos el valos de cookie
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    //Obtenemos la cokkie
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    //Al examinar la imagen
+    function archivo(evt) {
+        var files = evt.target.files; // FileList object
+
+        //Obtenemos la imagen del campo "file".
+        for (var i = 0, f; f = files[i]; i++) {
+            //Solo admitimos imágenes.
+            if (!f.type.match('image.*')) {
+                continue;
+            }
+
+            var reader = new FileReader();
+
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    // Creamos la imagen.
+                    document.getElementById("list").innerHTML = ['<img class="thumb" id="idAvatar" src="', e.target.result,'" title="', escape(theFile.name), '"/>'].join('');
+                    sourceAvatar = e.target.result
+                };
+            })(f);
+
+            reader.readAsDataURL(f);
+        }
+    }
+
+
+
+
+</script>
