@@ -19,6 +19,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +39,10 @@ public class ProcessRequestRunnable implements Runnable {
      */
     private static final List<String> chats = Lists.newArrayList();
 
+    /**
+     * Hora
+     */
+    private static final List<Date> horas = Collections.synchronizedList(Lists.newArrayList());
     /**
      * Socket asociado al cliente.
      */
@@ -156,14 +161,17 @@ public class ProcessRequestRunnable implements Runnable {
      * @param uri
      */
     private static void writeChat(final OutputStream outputStream, final String verbo, final String uri) throws IOException {
-        log.debug("URTI FINAAAAL   " + uri);
+        Date date = new Date();
         if (StringUtils.contains(uri, "chat?msgText=")) {
             final String msg = StringUtils.substringAfter(uri, "chat?msgText=");
             log.debug("Msg to include: {}", msg);
 
-            // Sincronizacion
+            // Sincronizaciones
             synchronized (chats) {
                 chats.add(msg);
+        }
+            synchronized (horas) {
+                horas.add(date);
             }
         }
 
@@ -175,19 +183,20 @@ public class ProcessRequestRunnable implements Runnable {
 
         // Siempre el mismo comportamiento
         synchronized (chats) {
+            int i= 0;
             for (String line : chats) {
 
 
                 final String lineaVerdadera = URLDecoder.decode(line, Charset.defaultCharset().name());
                 DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                Date date = new Date();
+
                //InetAddress.getLocalHost().getHostAddress();
                 log.debug(date.toString());
-                String hora = "<font color=\"GRAY\">"+date.toString().split(" ")[3]+"</font>";
+                String hora = "<font color=\"GRAY\">"+horas.get(i).toString().split(" ")[3]+"</font>";
                 sb.append(StringUtils.replace(chatline, "CONTENT", hora+" "+lineaVerdadera));
 
                 sb.append("\r\n");
-
+                i++;
             }
         }
 
